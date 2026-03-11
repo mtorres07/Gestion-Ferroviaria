@@ -3,8 +3,9 @@ package es.studium;
 import java.awt.*;
 import java.awt.event.*;
 
-public class MenuPrincipal extends WindowAdapter implements ActionListener {
-    Frame ventana = new Frame("Menú Principal - Gestión de Trenes");
+public class MenuPrincipal implements ActionListener {
+    // Declaración de componentes
+    Frame ventana = new Frame("Menú Principal - Gestión Ferroviaria");
     MenuBar barraMenu = new MenuBar();
 
     Menu menuCiudades = new Menu("Ciudades");
@@ -28,51 +29,72 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener {
     MenuItem mniConsultaEstacion = new MenuItem("Consulta");
 
     MenuItem mniCerrarSesion = new MenuItem("Cerrar Sesión");
-    
-    String perfilUsuario;
 
     public MenuPrincipal(String perfil) {
-        this.perfilUsuario = perfil;
-
         ventana.setLayout(new FlowLayout());
-        ventana.setSize(400, 300);
+        ventana.setSize(450, 350);
         ventana.setMenuBar(barraMenu);
-        ventana.addWindowListener(this);
 
-        menuCiudades.add(mniAltaCiudad); menuCiudades.add(mniBajaCiudad);
-        menuCiudades.add(mniModificacionCiudad); menuCiudades.add(mniConsultaCiudad);
-        menuTrenes.add(mniAltaTren); menuTrenes.add(mniBajaTren);
-        menuTrenes.add(mniModificacionTren); menuTrenes.add(mniConsultaTren);
-        menuEstaciones.add(mniAltaEstacion); menuEstaciones.add(mniBajaEstacion);
-        menuEstaciones.add(mniModificacionEstacion); menuEstaciones.add(mniConsultaEstacion);
+        // Montar Menús
+        menuCiudades.add(mniAltaCiudad);
+        menuCiudades.add(mniBajaCiudad);
+        menuCiudades.add(mniModificacionCiudad);
+        menuCiudades.add(mniConsultaCiudad);
+
+        menuTrenes.add(mniAltaTren);
+        menuTrenes.add(mniBajaTren);
+        menuTrenes.add(mniModificacionTren);
+        menuTrenes.add(mniConsultaTren);
+
+        menuEstaciones.add(mniAltaEstacion);
+        menuEstaciones.add(mniBajaEstacion);
+        menuEstaciones.add(mniModificacionEstacion);
+        menuEstaciones.add(mniConsultaEstacion);
+
         menuSalir.add(mniCerrarSesion);
 
-        barraMenu.add(menuCiudades); barraMenu.add(menuTrenes);
-        barraMenu.add(menuEstaciones); barraMenu.add(menuSalir);
+        barraMenu.add(menuCiudades);
+        barraMenu.add(menuTrenes);
+        barraMenu.add(menuEstaciones);
+        barraMenu.add(menuSalir);
 
-        // CONTROL DE PERFILES (Lógica corregida con startsWith)
-        if (perfilUsuario != null && perfilUsuario.startsWith("Admin")) {
-            ventana.setTitle("Menú Principal - ADMINISTRADOR");
-        } else {
-            ventana.setTitle("Menú Principal - CONSULTOR");
-            mniAltaCiudad.setEnabled(false);
+        // --- LÓGICA DE PERMISOS PARA EL USUARIO BÁSICO ---
+        if (perfil.startsWith("Básico")) {
+            // Permitimos Altas (no hacemos nada)
+            // Desactivamos Bajas y Modificaciones
             mniBajaCiudad.setEnabled(false);
-            mniModificacionCiudad.setEnabled(false);
-            mniAltaTren.setEnabled(false);
             mniBajaTren.setEnabled(false);
-            mniModificacionTren.setEnabled(false);
-            mniAltaEstacion.setEnabled(false);
             mniBajaEstacion.setEnabled(false);
+            mniModificacionCiudad.setEnabled(false);
+            mniModificacionTren.setEnabled(false);
             mniModificacionEstacion.setEnabled(false);
         }
 
-        mniAltaCiudad.addActionListener(this); mniBajaCiudad.addActionListener(this);
-        mniModificacionCiudad.addActionListener(this); mniConsultaCiudad.addActionListener(this);
-        mniAltaTren.addActionListener(this); mniBajaTren.addActionListener(this);
-        mniModificacionTren.addActionListener(this); mniConsultaTren.addActionListener(this);
-        mniAltaEstacion.addActionListener(this); mniBajaEstacion.addActionListener(this);
-        mniModificacionEstacion.addActionListener(this); mniConsultaEstacion.addActionListener(this);
+        // --- AÑADIR LOS LISTENERS DE LOS BOTONES ---
+        mniAltaCiudad.addActionListener(this);
+        mniBajaCiudad.addActionListener(this);
+        mniModificacionCiudad.addActionListener(this);
+        mniConsultaCiudad.addActionListener(this);
+
+        mniAltaTren.addActionListener(this);
+        mniBajaTren.addActionListener(this);
+        mniModificacionTren.addActionListener(this);
+        mniConsultaTren.addActionListener(this);
+
+        mniAltaEstacion.addActionListener(this);
+        mniBajaEstacion.addActionListener(this);
+        mniModificacionEstacion.addActionListener(this);
+        mniConsultaEstacion.addActionListener(this);
+
         mniCerrarSesion.addActionListener(this);
+
+        // --- CÓDIGO PARA QUE LA VENTANA SE CIERRE CON LA X ---
+        ventana.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
 
         ventana.setResizable(false);
         ventana.setLocationRelativeTo(null);
@@ -81,21 +103,28 @@ public class MenuPrincipal extends WindowAdapter implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // ACCIONES CIUDADES
         if (e.getSource().equals(mniAltaCiudad)) { new AltaCiudad(); }
-        else if (e.getSource().equals(mniBajaCiudad)) { new BajaCiudad(); }
-        else if (e.getSource().equals(mniModificacionCiudad)) { new ModificacionCiudad(); }
-        else if (e.getSource().equals(mniConsultaCiudad)) { new ConsultaCiudades(); }
-        else if (e.getSource().equals(mniAltaTren)) { new AltaTren(); }
-        else if (e.getSource().equals(mniBajaTren)) { new BajaTren(); }
-        else if (e.getSource().equals(mniModificacionTren)) { new ModificacionTren(); }
-        else if (e.getSource().equals(mniConsultaTren)) { new ConsultaTrenes(); }
-        else if (e.getSource().equals(mniAltaEstacion)) { new AltaEstacion(); }
-        else if (e.getSource().equals(mniBajaEstacion)) { new BajaEstacion(); }
-        else if (e.getSource().equals(mniModificacionEstacion)) { new ModificacionEstacion(); }
-        else if (e.getSource().equals(mniConsultaEstacion)) { new ConsultaEstaciones(); }
-        else if (e.getSource().equals(mniCerrarSesion)) { ventana.dispose(); new Login(); }
-    }
+        if (e.getSource().equals(mniBajaCiudad)) { new BajaCiudad(); }
+        if (e.getSource().equals(mniModificacionCiudad)) { new ModificacionCiudad(); }
+        if (e.getSource().equals(mniConsultaCiudad)) { new ConsultaCiudades(); }
 
-    @Override
-    public void windowClosing(WindowEvent e) { System.exit(0); }
+        // ACCIONES TRENES
+        if (e.getSource().equals(mniAltaTren)) { new AltaTren(); }
+        if (e.getSource().equals(mniBajaTren)) { new BajaTren(); }
+        if (e.getSource().equals(mniModificacionTren)) { new ModificacionTren(); }
+        if (e.getSource().equals(mniConsultaTren)) { new ConsultaTrenes(); }
+
+        // ACCIONES ESTACIONES
+        if (e.getSource().equals(mniAltaEstacion)) { new AltaEstacion(); }
+        if (e.getSource().equals(mniBajaEstacion)) { new BajaEstacion(); }
+        if (e.getSource().equals(mniModificacionEstacion)) { new ModificacionEstacion(); }
+        if (e.getSource().equals(mniConsultaEstacion)) { new ConsultaEstaciones(); }
+
+        // SALIR
+        if (e.getSource().equals(mniCerrarSesion)) {
+            ventana.setVisible(false);
+            new Login();
+        }
+    }
 }
